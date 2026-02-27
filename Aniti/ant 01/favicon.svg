@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <radialGradient id="bg" cx="40%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#d0d8e0"/>
+      <stop offset="100%" stop-color="#8a9aaa"/>
+    </radialGradient>
+  </defs>
+  <!-- Background circle -->
+  <circle cx="32" cy="32" r="31" fill="url(#bg)" stroke="#b0bcc8" stroke-width="0.5"/>
+  <!-- Blue orbit -->
+  <ellipse cx="32" cy="32" rx="19" ry="10" transform="rotate(-35 32 32)"
+    fill="none" stroke="#1a3260" stroke-width="3"
+    stroke-dasharray="3.2 3.5" stroke-linecap="round" opacity="0.95"/>
+  <!-- Green orbit -->
+  <ellipse cx="32" cy="32" rx="19" ry="10" transform="rotate(35 32 32)"
+    fill="none" stroke="#4fc040" stroke-width="3"
+    stroke-dasharray="3.2 3.5" stroke-linecap="round" opacity="0.95"/>
+  <!-- Gold orbit -->
+  <ellipse cx="32" cy="32" rx="19" ry="10" transform="rotate(90 32 32)"
+    fill="none" stroke="#d4a020" stroke-width="3"
+    stroke-dasharray="3.2 3.5" stroke-linecap="round" opacity="0.95"/>
+  <!-- Center white circle -->
+  <circle cx="32" cy="32" r="9" fill="url(#bg)" opacity="0.92"/>
+  <!-- M letter -->
+  <text x="32" y="37" font-family="Arial Black, Arial, sans-serif"
+    font-size="14" font-weight="900" fill="#1a3260" text-anchor="middle">M</text>
+</svg>
