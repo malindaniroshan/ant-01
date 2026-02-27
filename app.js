@@ -168,12 +168,18 @@ function createGraphicCard(project) {
         'visiting-card': 'Visiting Card',
         'thankyou-card': 'Thank You Card',
         'printing': 'Printing Work',
+        'social-media': 'Social Media',
+        'banner': 'Banner',
+        'tshirt': 'T-Shirt',
     };
     const catColors = {
         'logo': 'brand',
         'visiting-card': 'accent',
         'thankyou-card': 'pink',
         'printing': 'amber',
+        'social-media': 'green',
+        'banner': 'orange',
+        'tshirt': 'purple',
     };
     const color = catColors[project.category] || 'brand';
     const label = catLabels[project.category] || project.category;
