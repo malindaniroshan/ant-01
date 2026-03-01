@@ -7,6 +7,9 @@ let currentMainTab = 'graphic';      // 'graphic' | 'web'
 let currentCategory = 'all';         // 'all' | 'logo' | 'visiting-card' | 'thankyou-card' | 'printing'
 let currentAdminTab = 'graphic';     // admin side tab
 let isAdminLoggedIn = false;
+let loadedProjects = [];
+let currentLightboxImages = [];
+let currentLightboxIndex = 0;
 
 /* ==================== INIT ==================== */
 document.addEventListener('DOMContentLoaded', () => {
@@ -121,12 +124,12 @@ function filterCategory(cat) {
 
 /* ==================== RENDER PORTFOLIO ==================== */
 async function renderPortfolio() {
-    const allProjects = await DB.getProjects();
+    loadedProjects = await DB.getProjects();
 
     if (currentMainTab === 'graphic') {
-        renderGraphicGrid(allProjects.filter(p => p.type === 'graphic'));
+        renderGraphicGrid(loadedProjects.filter(p => p.type === 'graphic'));
     } else {
-        renderWebGrid(allProjects.filter(p => p.type === 'web'));
+        renderWebGrid(loadedProjects.filter(p => p.type === 'web'));
     }
 }
 
@@ -186,7 +189,7 @@ function createGraphicCard(project) {
 
     return `
     <div class="portfolio-card group relative rounded-2xl overflow-hidden bg-dark-700/60 border border-white/10 hover:border-brand-500/40 shadow-lg cursor-pointer"
-         onclick="openLightbox('${escapeHtml(project.image)}', '${escapeHtml(project.title)}')">
+         onclick="openLightbox('${project.id}')">
         <div class="overflow-hidden aspect-[4/3]">
             <img src="${escapeHtml(project.image)}" 
                  alt="${escapeHtml(project.title)}" 
@@ -212,7 +215,7 @@ function createWebCard(project) {
     return `
     <div class="portfolio-card group rounded-2xl overflow-hidden bg-dark-700/60 border border-white/10 hover:border-purple-500/40 shadow-lg">
         <div class="overflow-hidden aspect-video cursor-pointer" 
-             onclick="openLightbox('${escapeHtml(project.image)}', '${escapeHtml(project.title)}')">
+             onclick="openLightbox('${project.id}')">
             <img src="${escapeHtml(project.image)}" 
                  alt="${escapeHtml(project.title)}" 
                  class="w-full h-full object-cover"
@@ -245,14 +248,59 @@ function escapeHtml(str) {
 }
 
 /* ==================== LIGHTBOX ==================== */
-function openLightbox(src, alt) {
+function openLightbox(projectId) {
+    const project = loadedProjects.find(p => p.id === projectId);
+    if (!project) return;
+
+    // Fallback if images array is empty but visual image is available
+    currentLightboxImages = Array.isArray(project.images) && project.images.length > 0
+        ? project.images
+        : [project.image];
+
+    currentLightboxIndex = 0;
+
     const lb = document.getElementById('lightbox');
     const img = document.getElementById('lightboxImg');
-    img.src = src;
-    img.alt = alt || '';
+    const prevBtn = document.getElementById('lightboxPrev');
+    const nextBtn = document.getElementById('lightboxNext');
+    const counter = document.getElementById('lightboxCounter');
+
+    img.src = currentLightboxImages[currentLightboxIndex];
+    img.alt = project.title || '';
+
+    // Toggle multi-image controls
+    if (currentLightboxImages.length > 1) {
+        prevBtn.classList.remove('hidden');
+        nextBtn.classList.remove('hidden');
+        counter.classList.remove('hidden');
+        counter.textContent = `1 / ${currentLightboxImages.length}`;
+    } else {
+        prevBtn.classList.add('hidden');
+        nextBtn.classList.add('hidden');
+        counter.classList.add('hidden');
+    }
+
     lb.classList.remove('hidden');
     lb.classList.add('flex');
     document.body.style.overflow = 'hidden';
+}
+
+function changeLightboxImage(direction) {
+    if (!currentLightboxImages || currentLightboxImages.length <= 1) return;
+
+    currentLightboxIndex += direction;
+
+    // Loop around
+    if (currentLightboxIndex < 0) {
+        currentLightboxIndex = currentLightboxImages.length - 1;
+    } else if (currentLightboxIndex >= currentLightboxImages.length) {
+        currentLightboxIndex = 0;
+    }
+
+    const img = document.getElementById('lightboxImg');
+    img.src = currentLightboxImages[currentLightboxIndex];
+
+    document.getElementById('lightboxCounter').textContent = `${currentLightboxIndex + 1} / ${currentLightboxImages.length}`;
 }
 
 function closeLightbox() {
@@ -262,9 +310,14 @@ function closeLightbox() {
     document.body.style.overflow = '';
 }
 
-// Close lightbox with Escape key
+// Close or navigate lightbox with keyboard keys
 document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeLightbox();
+    const lb = document.getElementById('lightbox');
+    if (lb && lb.classList.contains('flex')) {
+        if (e.key === 'Escape') closeLightbox();
+        if (e.key === 'ArrowLeft') changeLightboxImage(-1);
+        if (e.key === 'ArrowRight') changeLightboxImage(1);
+    }
 });
 
 /* ==================== ADMIN PANEL ==================== */

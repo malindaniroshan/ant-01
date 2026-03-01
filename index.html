@@ -958,14 +958,34 @@
     </div>
 
     <!-- ===== IMAGE LIGHTBOX ===== -->
-    <div id="lightbox" class="fixed inset-0 bg-black/90 backdrop-blur-sm z-[200] hidden items-center justify-center p-4"
+    <div id="lightbox"
+        class="fixed inset-0 bg-black/90 backdrop-blur-sm z-[200] hidden flex-col items-center justify-center p-4"
         onclick="closeLightbox()">
         <button
-            class="absolute top-4 right-4 w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-all">
+            class="absolute top-4 right-4 w-10 h-10 z-[210] rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-all">
             <i class="fas fa-times"></i>
         </button>
-        <img id="lightboxImg" src="" alt="" class="max-w-full max-h-[90vh] rounded-2xl object-contain shadow-2xl"
+
+        <button id="lightboxPrev"
+            class="hidden absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-all z-[210]"
+            onclick="event.stopPropagation(); changeLightboxImage(-1)">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+
+        <button id="lightboxNext"
+            class="hidden absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-all z-[210]"
+            onclick="event.stopPropagation(); changeLightboxImage(1)">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+
+        <img id="lightboxImg" src="" alt=""
+            class="max-w-full max-h-[85vh] rounded-2xl object-contain shadow-2xl relative z-[205]"
             onclick="event.stopPropagation()" />
+
+        <div id="lightboxCounter"
+            class="hidden absolute bottom-6 text-white text-sm bg-black/50 px-4 py-1.5 rounded-full z-[210]">
+            1 / 1
+        </div>
     </div>
 
     <!-- Script for filter buttons spotlight hover effect -->
