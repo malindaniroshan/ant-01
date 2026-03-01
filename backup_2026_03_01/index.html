@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pixel by Maliya – Creative Design Studio</title>
+    <meta name="description"
+        content="Pixel by Maliya – Professional Graphic Design & Web Design portfolio. Logo design, visiting cards, thank you cards, printing services and web design in Sri Lanka." />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="alternate icon" href="favicon.svg" />
+    <meta name="theme-color" content="#1a3260" />
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'], display: ['Space Grotesk', 'sans-serif'] },
+                    colors: {
+                        brand: { 50: '#f0f4ff', 100: '#e0e9ff', 200: '#c7d6fe', 300: '#a5b8fc', 400: '#818cf8', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca', 800: '#3730a3', 900: '#312e81' },
+                        accent: { 300: '#67e8f9', 400: '#22d3ee', 500: '#06b6d4', 600: '#0891b2' },
+                        dark: { 900: '#030712', 800: '#0c1322', 700: '#111827', 600: '#1f2937', 500: '#374151' }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'float-delay': 'float 6s ease-in-out 2s infinite',
+                        'fade-in': 'fadeIn 0.5s ease-out forwards',
+                    },
+                    keyframes: {
+                        float: { '0%,100%': { transform: 'translateY(0px)' }, '50%': { transform: 'translateY(-20px)' } },
+                        fadeIn: { from: { opacity: '0' }, to: { opacity: '1' } },
+                    },
+                }
+            }
+        }
+    </script>
+
+    <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body class="bg-dark-900 text-white font-sans overflow-x-hidden">
+
+    <!-- Particle + cursor canvases -->
+    <canvas id="particleCanvas" class="fixed inset-0 pointer-events-none z-0"></canvas>
+    <canvas id="cursorAnimCanvas"></canvas>
+
+    <!-- ===== NAVBAR ===== -->
+    <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16 md:h-20">
+                <a href="index.html" class="flex items-center gap-3 group">
+                    <div
+                        class="w-11 h-11 flex-shrink-0 group-hover:scale-110 transition-transform duration-300 drop-shadow-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="44" height="44">
+                            <defs>
+                                <radialGradient id="navbg" cx="40%" cy="35%" r="65%">
+                                    <stop offset="0%" stop-color="#d0d8e0" />
+                                    <stop offset="100%" stop-color="#8a9aaa" />
+                                </radialGradient>
+                            </defs>
+                            <circle cx="32" cy="32" r="31" fill="url(#navbg)" stroke="#b0bcc8" stroke-width="0.5" />
+                            <ellipse cx="32" cy="32" rx="19" ry="10" transform="rotate(-35 32 32)" fill="none"
+                                stroke="#1a3260" stroke-width="3" stroke-dasharray="3.2 3.5" stroke-linecap="round"
+                                opacity="0.95" />
+                            <ellipse cx="32" cy="32" rx="19" ry="10" transform="rotate(35 32 32)" fill="none"
+                                stroke="#4fc040" stroke-width="3" stroke-dasharray="3.2 3.5" stroke-linecap="round"
+                                opacity="0.95" />
+                            <ellipse cx="32" cy="32" rx="19" ry="10" transform="rotate(90 32 32)" fill="none"
+                                stroke="#d4a020" stroke-width="3" stroke-dasharray="3.2 3.5" stroke-linecap="round"
+                                opacity="0.95" />
+                            <circle cx="32" cy="32" r="9" fill="url(#navbg)" opacity="0.92" />
+                            <text x="32" y="37" font-family="Arial Black,Arial,sans-serif" font-size="14"
+                                font-weight="900" fill="#1a3260" text-anchor="middle">M</text>
+                        </svg>
+                    </div>
+                    <div>
+                        <span class="font-display font-bold text-white text-lg leading-none">Pixel by </span><span
+                            class="font-display font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-cyan-400 text-lg leading-none">Maliya</span>
+                    </div>
+                </a>
+                <div class="hidden md:flex items-center gap-1">
+                    <a href="#hero"
+                        class="nav-link px-4 py-2 rounded-lg text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 transition-all">Home</a>
+                    <a href="project.html"
+                        class="nav-link px-4 py-2 rounded-lg text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 transition-all">Portfolio</a>
+                    <a href="#services"
+                        class="nav-link px-4 py-2 rounded-lg text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 transition-all">Services</a>
+                    <a href="#contact"
+                        class="nav-link px-4 py-2 rounded-lg text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 transition-all">Contact</a>
+                </div>
+                <div class="flex items-center gap-3">
+                    <a href="https://wa.me/94716125715" target="_blank"
+                        class="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-green-500 to-green-600 text-white text-sm font-semibold hover:shadow-lg hover:shadow-green-500/30 transition-all duration-300 hover:-translate-y-0.5">
+                        <i class="fab fa-whatsapp text-base"></i> WhatsApp
+                    </a>
+                    <button id="mobileMenuBtn"
+                        class="md:hidden w-10 h-10 flex items-center justify-center rounded-lg bg-white/10 hover:bg-white/20 transition-all">
+                        <i class="fas fa-bars text-white"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="mobileMenu" class="hidden md:hidden bg-dark-800/95 backdrop-blur-xl border-t border-white/10">
+            <div class="px-4 py-4 space-y-1">
+                <a href="#hero"
+                    class="mobile-nav-link block px-4 py-3 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-all font-medium">Home</a>
+                <a href="project.html"
+                    class="mobile-nav-link block px-4 py-3 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-all font-medium">Portfolio</a>
+                <a href="#services"
+                    class="mobile-nav-link block px-4 py-3 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-all font-medium">Services</a>
+                <a href="#contact"
+                    class="mobile-nav-link block px-4 py-3 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-all font-medium">Contact</a>
+                <a href="https://wa.me/94716125715" target="_blank"
+                    class="flex items-center gap-2 px-4 py-3 rounded-lg bg-green-500/20 text-green-400 font-medium hover:bg-green-500/30 transition-all">
+                    <i class="fab fa-whatsapp"></i> Chat on WhatsApp
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ===== HERO ===== -->
+    <section id="hero" class="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
+        <div class="absolute inset-0 z-0">
+            <div class="absolute w-96 h-96 rounded-full bg-brand-600/30 blur-3xl top-1/4 -left-24 animate-float"></div>
+            <div class="absolute w-80 h-80 rounded-full bg-accent-500/20 blur-3xl top-1/3 right-0 animate-float-delay">
+            </div>
+            <div class="absolute w-72 h-72 rounded-full bg-purple-600/20 blur-3xl bottom-1/4 left-1/3 animate-float">
+            </div>
+        </div>
+        <div class="absolute inset-0 z-0 grid-pattern opacity-20"></div>
+
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center py-20">
+            <div
+                class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-500/20 border border-brand-500/30 text-brand-300 text-sm font-medium mb-8 animate-fade-in">
+                <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+                Available for projects
+            </div>
+            <h1 class="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold leading-tight mb-6">
+                <span class="text-white block">Creative</span>
+                <span
+                    class="text-transparent bg-clip-text bg-gradient-to-r from-brand-400 via-accent-400 to-purple-400 block">Design
+                    Studio</span>
+            </h1>
+            <p class="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
+                Bringing your brand to life through stunning <strong class="text-white">graphic design</strong> and
+                modern <strong class="text-white">web design</strong>. Logo design, print materials, visiting cards &
+                more.
+            </p>
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6">
+                <a href="project.html"
+                    class="group flex items-center gap-2 px-8 py-4 rounded-2xl bg-gradient-to-r from-brand-500 to-accent-500 text-white font-semibold text-lg hover:shadow-2xl hover:shadow-brand-500/40 transition-all duration-300 hover:-translate-y-1">
+                    <i class="fas fa-images"></i> View My Projects
+                    <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                </a>
+                <a href="https://wa.me/94716125715" target="_blank"
+                    class="flex items-center gap-2 px-8 py-4 rounded-2xl border border-white/20 bg-white/5 backdrop-blur text-white font-semibold text-lg hover:bg-white/10 hover:border-white/40 transition-all duration-300 hover:-translate-y-1">
+                    <i class="fab fa-whatsapp text-green-400"></i> Get a Quote
+                </a>
+            </div>
+            <!-- Stats -->
+            <div class="flex flex-wrap justify-center gap-10 mt-16">
+                <div class="text-center">
+                    <div class="font-display text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-brand-400 to-accent-400"
+                        id="stat-projects">—</div>
+                    <div class="text-gray-400 text-sm mt-1">Projects Done</div>
+                </div>
+                <div class="text-center">
+                    <div
+                        class="font-display text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-brand-400 to-accent-400">
+                        100%</div>
+                    <div class="text-gray-400 text-sm mt-1">Client Satisfaction</div>
+                </div>
+                <div class="text-center">
+                    <div
+                        class="font-display text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-brand-400 to-accent-400">
+                        24h</div>
+                    <div class="text-gray-400 text-sm mt-1">Fast Turnaround</div>
+                </div>
+            </div>
+        </div>
+        <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce">
+            <span class="text-gray-500 text-xs tracking-widest uppercase">Scroll</span>
+            <i class="fas fa-chevron-down text-gray-500"></i>
+        </div>
+    </section>
+
+    <!-- ===== SERVICES ===== -->
+    <section id="services" class="relative py-24 z-10">
+        <div class="absolute inset-0 z-0">
+            <div class="absolute w-96 h-96 rounded-full bg-accent-500/10 blur-3xl top-0 right-1/4"></div>
+        </div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-16">
+                <div
+                    class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent-500/10 border border-accent-500/20 text-accent-300 text-sm font-medium mb-4">
+                    <i class="fas fa-sparkles"></i> What We Offer</div>
+                <h2 class="font-display text-4xl md:text-5xl font-bold text-white mb-4">Our Services</h2>
+                <p class="text-gray-400 max-w-2xl mx-auto">Professional design services tailored to elevate your brand
+                </p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Logo Design -->
+                <div
+                    class="service-card group p-8 rounded-3xl bg-dark-700/60 border border-white/10 hover:border-brand-500/50 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-brand-500/10 backdrop-blur">
+                    <div
+                        class="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-500/20 to-brand-500/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 border border-brand-500/20">
+                        <i class="fas fa-star text-2xl text-brand-400"></i></div>
+                    <h3 class="font-display font-bold text-xl text-white mb-3">Logo Design</h3>
+                    <p class="text-gray-400 leading-relaxed text-sm">Unique, memorable logos that capture your brand
+                        identity. Delivered in all formats – PNG, SVG, PDF.</p>
+                    <div class="mt-6 flex flex-wrap gap-2"><span
+                            class="px-3 py-1 rounded-full bg-brand-500/10 text-brand-300 text-xs font-medium border border-brand-500/20">Brand
+                            Identity</span><span
+                            class="px-3 py-1 rounded-full bg-brand-500/10 text-brand-300 text-xs font-medium border border-brand-500/20">All
+                            Formats</span></div>
+                </div>
+                <!-- Visiting Cards -->
+                <div
+                    class="service-card group p-8 rounded-3xl bg-dark-700/60 border border-white/10 hover:border-accent-500/50 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-accent-500/10 backdrop-blur">
+                    <div
+                        class="w-16 h-16 rounded-2xl bg-gradient-to-br from-accent-500/20 to-accent-500/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 border border-accent-500/20">
+                        <i class="fas fa-address-card text-2xl text-accent-400"></i></div>
+                    <h3 class="font-display font-bold text-xl text-white mb-3">Visiting Cards</h3>
+                    <p class="text-gray-400 leading-relaxed text-sm">Professional business cards designed to make a
+                        lasting impression. Design + printing available.</p>
+                    <div class="mt-6 flex flex-wrap gap-2"><span
+                            class="px-3 py-1 rounded-full bg-accent-500/10 text-accent-300 text-xs font-medium border border-accent-500/20">Design</span><span
+                            class="px-3 py-1 rounded-full bg-accent-500/10 text-accent-300 text-xs font-medium border border-accent-500/20">Printing</span>
+                    </div>
+                </div>
+                <!-- Thank You Cards -->
+                <div
+                    class="service-card group p-8 rounded-3xl bg-dark-700/60 border border-white/10 hover:border-pink-500/50 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-pink-500/10 backdrop-blur">
+                    <div
+                        class="w-16 h-16 rounded-2xl bg-gradient-to-br from-pink-500/20 to-pink-500/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 border border-pink-500/20">
+                        <i class="fas fa-heart text-2xl text-pink-400"></i></div>
+                    <h3 class="font-display font-bold text-xl text-white mb-3">Thank You Cards</h3>
+                    <p class="text-gray-400 leading-relaxed text-sm">Elegant thank you card designs for weddings,
+                        events, and businesses. Custom design & printing.</p>
+                    <div class="mt-6 flex flex-wrap gap-2"><span
+                            class="px-3 py-1 rounded-full bg-pink-500/10 text-pink-300 text-xs font-medium border border-pink-500/20">Design</span><span
+                            class="px-3 py-1 rounded-full bg-pink-500/10 text-pink-300 text-xs font-medium border border-pink-500/20">Printing</span>
+                    </div>
+                </div>
+                <!-- Printing Work -->
+                <div
+                    class="service-card group p-8 rounded-3xl bg-dark-700/60 border border-white/10 hover:border-amber-500/50 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-amber-500/10 backdrop-blur">
+                    <div
+                        class="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-500/20 to-amber-500/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 border border-amber-500/20">
+                        <i class="fas fa-print text-2xl text-amber-400"></i></div>
+                    <h3 class="font-display font-bold text-xl text-white mb-3">Printing Work</h3>
+                    <p class="text-gray-400 leading-relaxed text-sm">High-quality print materials – flyers, banners,
+                        posters, brochures, stickers and more.</p>
+                    <div class="mt-6 flex flex-wrap gap-2"><span
+                            class="px-3 py-1 rounded-full bg-amber-500/10 text-amber-300 text-xs font-medium border border-amber-500/20">Banners</span><span
+                            class="px-3 py-1 rounded-full bg-amber-500/10 text-amber-300 text-xs font-medium border border-amber-500/20">Flyers</span><span
+                            class="px-3 py-1 rounded-full bg-amber-500/10 text-amber-300 text-xs font-medium border border-amber-500/20">Stickers</span>
+                    </div>
+                </div>
+                <!-- Web Design -->
+                <div
+                    class="service-card group p-8 rounded-3xl bg-dark-700/60 border border-white/10 hover:border-purple-500/50 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-purple-500/10 backdrop-blur">
+                    <div
+                        class="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500/20 to-purple-500/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 border border-purple-500/20">
+                        <i class="fas fa-code text-2xl text-purple-400"></i></div>
+                    <h3 class="font-display font-bold text-xl text-white mb-3">Web Design</h3>
+                    <p class="text-gray-400 leading-relaxed text-sm">Modern, responsive websites built to convert.
+                        Portfolio sites, business sites, landing pages.</p>
+                    <div class="mt-6 flex flex-wrap gap-2"><span
+                            class="px-3 py-1 rounded-full bg-purple-500/10 text-purple-300 text-xs font-medium border border-purple-500/20">Responsive</span><span
+                            class="px-3 py-1 rounded-full bg-purple-500/10 text-purple-300 text-xs font-medium border border-purple-500/20">Modern</span>
+                    </div>
+                </div>
+                <!-- Social Media -->
+                <div
+                    class="service-card group p-8 rounded-3xl bg-dark-700/60 border border-white/10 hover:border-green-500/50 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-green-500/10 backdrop-blur">
+                    <div
+                        class="w-16 h-16 rounded-2xl bg-gradient-to-br from-green-500/20 to-green-500/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 border border-green-500/20">
+                        <i class="fas fa-share-alt text-2xl text-green-400"></i></div>
+                    <h3 class="font-display font-bold text-xl text-white mb-3">Social Media Design</h3>
+                    <p class="text-gray-400 leading-relaxed text-sm">Eye-catching posts, stories, covers and profile
+                        photos for your social media presence.</p>
+                    <div class="mt-6 flex flex-wrap gap-2"><span
+                            class="px-3 py-1 rounded-full bg-green-500/10 text-green-300 text-xs font-medium border border-green-500/20">Posts</span><span
+                            class="px-3 py-1 rounded-full bg-green-500/10 text-green-300 text-xs font-medium border border-green-500/20">Stories</span>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-14">
+                <a href="project.html"
+                    class="inline-flex items-center gap-3 px-10 py-4 rounded-2xl bg-gradient-to-r from-brand-500 to-accent-500 text-white font-semibold text-lg hover:shadow-2xl hover:shadow-brand-500/40 transition-all duration-300 hover:-translate-y-1">
+                    <i class="fas fa-images"></i> View My Projects <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== CONTACT ===== -->
+    <section id="contact" class="relative py-24 z-10">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <div
+                    class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 border border-green-500/20 text-green-300 text-sm font-medium mb-4">
+                    <i class="fas fa-envelope"></i> Get in Touch</div>
+                <h2 class="font-display text-4xl md:text-5xl font-bold text-white mb-4">Contact Us</h2>
+                <p class="text-gray-400">Have a project in mind? Let's create something amazing together.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="space-y-6">
+                    <div class="p-6 rounded-2xl bg-dark-700/60 border border-white/10 backdrop-blur">
+                        <h3 class="font-display font-bold text-white text-xl mb-6">Reach Out</h3>
+                        <div class="space-y-5">
+                            <a href="https://wa.me/94716125715" target="_blank"
+                                class="flex items-center gap-4 p-4 rounded-xl bg-green-500/10 border border-green-500/20 hover:bg-green-500/20 hover:border-green-500/40 transition-all duration-300 group">
+                                <div
+                                    class="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                                    <i class="fab fa-whatsapp text-xl text-green-400"></i></div>
+                                <div>
+                                    <div class="text-white font-semibold">WhatsApp</div>
+                                    <div class="text-gray-400 text-sm">+94 71 612 5715</div>
+                                </div>
+                                <i
+                                    class="fas fa-external-link-alt text-gray-600 ml-auto group-hover:text-green-400 transition-colors"></i>
+                            </a>
+                            <a href="https://web.facebook.com/pixelbymaliya" target="_blank"
+                                class="flex items-center gap-4 p-4 rounded-xl bg-blue-500/10 border border-blue-500/20 hover:bg-blue-500/20 hover:border-blue-500/40 transition-all duration-300 group">
+                                <div
+                                    class="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                                    <i class="fab fa-facebook text-xl text-blue-400"></i></div>
+                                <div>
+                                    <div class="text-white font-semibold">Facebook</div>
+                                    <div class="text-gray-400 text-sm">PixelByMaliya</div>
+                                </div>
+                                <i
+                                    class="fas fa-external-link-alt text-gray-600 ml-auto group-hover:text-blue-400 transition-colors"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div
+                        class="p-6 rounded-2xl bg-gradient-to-br from-brand-500/10 to-accent-500/10 border border-brand-500/20 backdrop-blur">
+                        <div class="flex items-center gap-3 mb-3"><i class="fas fa-clock text-brand-400"></i><span
+                                class="text-white font-semibold">Fast Response</span></div>
+                        <p class="text-gray-400 text-sm">We respond to all messages within 24 hours. For urgent
+                            projects, WhatsApp is the fastest way to reach us!</p>
+                    </div>
+                </div>
+                <div class="p-6 rounded-2xl bg-dark-700/60 border border-white/10 backdrop-blur">
+                    <h3 class="font-display font-bold text-white text-xl mb-6">Send a Message</h3>
+                    <form id="contactForm" class="space-y-4" onsubmit="sendWhatsAppMessage(event)">
+                        <div><label class="block text-sm font-medium text-gray-300 mb-2">Your Name</label><input
+                                type="text" id="contactName" required placeholder="e.g. Saman Perera"
+                                class="w-full px-4 py-3 rounded-xl bg-dark-900/60 border border-white/10 text-white placeholder-gray-600 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all" />
+                        </div>
+                        <div><label class="block text-sm font-medium text-gray-300 mb-2">Service Needed</label>
+                            <select id="contactService"
+                                class="w-full px-4 py-3 rounded-xl bg-dark-900/60 border border-white/10 text-white focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all">
+                                <option>Logo Design</option>
+                                <option>Visiting Cards</option>
+                                <option>Thank You Cards</option>
+                                <option>Printing Work</option>
+                                <option>Social Media Designs</option>
+                                <option>Banners</option>
+                                <option>T-Shirts</option>
+                                <option>Web Design</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                        <div><label class="block text-sm font-medium text-gray-300 mb-2">Message</label><textarea
+                                id="contactMessage" rows="4" required placeholder="Tell us about your project..."
+                                class="w-full px-4 py-3 rounded-xl bg-dark-900/60 border border-white/10 text-white placeholder-gray-600 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all resize-none"></textarea>
+                        </div>
+                        <button type="submit"
+                            class="w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold hover:shadow-xl hover:shadow-green-500/30 transition-all duration-300 hover:-translate-y-0.5"><i
+                                class="fab fa-whatsapp text-lg"></i> Send via WhatsApp</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="relative py-12 border-t border-white/5 z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                <div class="flex items-center gap-3">
+                    <span class="font-display font-bold text-white">Pixel by </span><span
+                        class="font-display font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-cyan-400">Maliya</span>
+                </div>
+                <p class="text-gray-600 text-sm text-center">© 2026 PixelByMaliya. All rights reserved. Crafted with <i
+                        class="fas fa-heart text-pink-500 mx-1"></i> in Sri Lanka.</p>
+                <div class="flex items-center gap-3">
+                    <a href="https://wa.me/94716125715" target="_blank"
+                        class="w-10 h-10 rounded-xl bg-white/5 hover:bg-green-500/20 border border-white/10 hover:border-green-500/30 flex items-center justify-center text-gray-400 hover:text-green-400 transition-all duration-300"><i
+                            class="fab fa-whatsapp"></i></a>
+                    <a href="https://web.facebook.com/pixelbymaliya" target="_blank"
+                        class="w-10 h-10 rounded-xl bg-white/5 hover:bg-blue-500/20 border border-white/10 hover:border-blue-500/30 flex items-center justify-center text-gray-400 hover:text-blue-400 transition-all duration-300"><i
+                            class="fab fa-facebook"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- FAB -->
+    <div class="fixed bottom-6 right-6 z-50">
+        <a href="https://wa.me/94716125715" target="_blank" title="WhatsApp"
+            class="w-14 h-14 rounded-2xl bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center text-white shadow-xl hover:shadow-green-500/50 hover:scale-110 transition-all duration-300">
+            <i class="fab fa-whatsapp text-2xl"></i>
+        </a>
+    </div>
+
+    <!-- ===== FIREBASE SDK ===== -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-storage-compat.js"></script>
+    <script src="firebase-init.js"></script>
+    <script src="db.js"></script>
+
+    <script>
+        /* ===== NAVBAR ===== */
+        window.addEventListener('scroll', () => document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 20));
+        const menuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        menuBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+        document.querySelectorAll('.mobile-nav-link').forEach(l => l.addEventListener('click', () => mobileMenu.classList.add('hidden')));
+
+        /* ===== STATS (async from Firebase) ===== */
+        async function loadStats() {
+            try {
+                const projects = await DB.getProjects();
+                const total = projects.length;
+                const el = document.getElementById('stat-projects');
+                let count = 0;
+                const target = total || 0;
+                if (target === 0) { el.textContent = '0+'; return; }
+                const step = Math.ceil(target / 40);
+                const timer = setInterval(() => {
+                    count += step;
+                    if (count >= target) { count = target; clearInterval(timer); }
+                    el.textContent = count + '+';
+                }, 40);
+            } catch (e) {
+                document.getElementById('stat-projects').textContent = '50+';
+            }
+        }
+
+        /* ===== SCROLL REVEAL ===== */
+        const obs = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }), { threshold: 0.1 });
+        document.querySelectorAll('.service-card').forEach(el => { el.classList.add('reveal'); obs.observe(el); });
+
+        /* ===== CONTACT ===== */
+        function sendWhatsAppMessage(e) {
+            e.preventDefault();
+            const name = document.getElementById('contactName').value.trim();
+            const service = document.getElementById('contactService').value;
+            const message = document.getElementById('contactMessage').value.trim();
+            const text = `Hi Pixel by Maliya! 👋\n\nMy name is *${name}*.\n\nI'm interested in: *${service}*\n\nMessage: ${message}`;
+            window.open(`https://wa.me/94716125715?text=${encodeURIComponent(text)}`, '_blank');
+        }
+
+        /* ===== PARTICLES ===== */
+        (function () { const c = document.getElementById('particleCanvas'); if (!c) return; const x = c.getContext('2d'); let p = [], w, h; function r() { w = c.width = window.innerWidth; h = c.height = window.innerHeight; } r(); window.addEventListener('resize', r); function mk() { return { x: Math.random() * w, y: Math.random() * h, vx: (Math.random() - .5) * .3, vy: (Math.random() - .5) * .3, s: Math.random() * 1.5 + .5, o: Math.random() * .4 + .1, c: Math.random() > .5 ? '99,102,241' : '6,182,212' }; } for (let i = 0; i < 80; i++)p.push(mk()); function d() { x.clearRect(0, 0, w, h); p.forEach((a, i) => { a.x += a.vx; a.y += a.vy; if (a.x < 0 || a.x > w) a.vx *= -1; if (a.y < 0 || a.y > h) a.vy *= -1; x.beginPath(); x.arc(a.x, a.y, a.s, 0, Math.PI * 2); x.fillStyle = `rgba(${a.c},${a.o})`; x.fill(); for (let j = i + 1; j < p.length; j++) { const b = p[j], dt = Math.hypot(a.x - b.x, a.y - b.y); if (dt < 120) { x.beginPath(); x.moveTo(a.x, a.y); x.lineTo(b.x, b.y); x.strokeStyle = `rgba(99,102,241,${.06 * (1 - dt / 120)})`; x.lineWidth = .5; x.stroke(); } } }); requestAnimationFrame(d); } d(); })();
+
+        /* ===== CURSOR ===== */
+        (function () { const c = document.getElementById('cursorAnimCanvas'); if (!c) return; const x = c.getContext('2d'); c.width = window.innerWidth; c.height = window.innerHeight; window.addEventListener('resize', () => { c.width = window.innerWidth; c.height = window.innerHeight; }); let t = []; window.addEventListener('mousemove', e => { t.push({ x: e.clientX, y: e.clientY, age: 0 }); if (t.length > 20) t.shift(); }); function d() { x.clearRect(0, 0, c.width, c.height); t.forEach((p, i) => { p.age++; const a = Math.max(0, .5 - p.age * .05) * (i / t.length); const s = Math.max(0, 3 - p.age * .1) * (i / t.length); x.beginPath(); x.arc(p.x, p.y, s, 0, Math.PI * 2); x.fillStyle = `rgba(99,102,241,${a})`; x.fill(); }); t = t.filter(p => p.age < 12); requestAnimationFrame(d); } d(); })();
+
+        /* Start */
+        document.addEventListener('DOMContentLoaded', loadStats);
+    </script>
+</body>
+
+</html>

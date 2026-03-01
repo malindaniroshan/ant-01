@@ -1,0 +1,946 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Panel – Pixel by Maliya</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <meta name="theme-color" content="#1a3260" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'], display: ['Space Grotesk', 'sans-serif'] },
+                    colors: {
+                        brand: { 300: '#a5b8fc', 400: '#818cf8', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca' },
+                        accent: { 400: '#22d3ee', 500: '#06b6d4' },
+                        dark: { 900: '#030712', 800: '#0c1322', 700: '#111827', 600: '#1f2937', 500: '#374151' }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+        #imageDropZone.drag-over {
+            border-color: rgba(99, 102, 241, .7);
+            background: rgba(99, 102, 241, .08);
+        }
+
+        /* Upload progress bar */
+        #uploadProgressWrap {
+            transition: all .3s;
+        }
+
+        #uploadProgressBar {
+            transition: width .3s;
+        }
+    </style>
+</head>
+
+<body class="bg-dark-900 text-white font-sans min-h-screen">
+
+    <canvas id="particleCanvas" class="fixed inset-0 pointer-events-none z-0"></canvas>
+
+    <!-- TOP BAR -->
+    <header class="fixed top-0 left-0 right-0 z-50 bg-dark-800/90 backdrop-blur-xl border-b border-white/10">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
+            <a href="index.html" class="flex items-center gap-3 group">
+                <div class="w-9 h-9 flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="36" height="36">
+                        <defs>
+                            <radialGradient id="hbg" cx="40%" cy="35%" r="65%">
+                                <stop offset="0%" stop-color="#d0d8e0" />
+                                <stop offset="100%" stop-color="#8a9aaa" />
+                            </radialGradient>
+                        </defs>
+                        <circle cx="32" cy="32" r="31" fill="url(#hbg)" stroke="#b0bcc8" stroke-width="0.5" />
+                        <ellipse cx="32" cy="32" rx="19" ry="10" transform="rotate(-35 32 32)" fill="none"
+                            stroke="#1a3260" stroke-width="3" stroke-dasharray="3.2 3.5" stroke-linecap="round"
+                            opacity="0.95" />
+                        <ellipse cx="32" cy="32" rx="19" ry="10" transform="rotate(35 32 32)" fill="none"
+                            stroke="#4fc040" stroke-width="3" stroke-dasharray="3.2 3.5" stroke-linecap="round"
+                            opacity="0.95" />
+                        <ellipse cx="32" cy="32" rx="19" ry="10" transform="rotate(90 32 32)" fill="none"
+                            stroke="#d4a020" stroke-width="3" stroke-dasharray="3.2 3.5" stroke-linecap="round"
+                            opacity="0.95" />
+                        <circle cx="32" cy="32" r="9" fill="url(#hbg)" opacity="0.92" />
+                        <text x="32" y="37" font-family="Arial Black,Arial,sans-serif" font-size="14" font-weight="900"
+                            fill="#1a3260" text-anchor="middle">M</text>
+                    </svg>
+                </div>
+                <div><span class="font-display font-bold text-white leading-none">Pixel by </span><span
+                        class="font-display font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-cyan-400 leading-none">Maliya</span>
+                </div>
+            </a>
+            <div class="flex items-center gap-2">
+                <div
+                    class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-brand-500/15 border border-brand-500/30 text-brand-300 text-xs font-semibold">
+                    <i class="fas fa-fire text-orange-400"></i> Firebase Connected
+                </div>
+                <a href="index.html"
+                    class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-gray-400 hover:text-white text-sm transition-all"><i
+                        class="fas fa-home text-xs"></i><span class="hidden sm:inline">Home</span></a>
+                <a href="project.html"
+                    class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-gray-400 hover:text-white text-sm transition-all"><i
+                        class="fas fa-images text-xs"></i><span class="hidden sm:inline">Portfolio</span></a>
+            </div>
+        </div>
+    </header>
+
+    <!-- LOGIN SCREEN -->
+    <div id="loginScreen" class="relative z-10 min-h-screen flex items-center justify-center px-4 pt-16">
+        <div class="w-full max-w-md">
+            <div class="bg-dark-800/80 backdrop-blur-xl rounded-3xl border border-white/10 p-8 shadow-2xl">
+                <div
+                    class="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-500 to-accent-500 flex items-center justify-center mx-auto mb-6 shadow-lg shadow-brand-500/30">
+                    <i class="fas fa-fire text-white text-2xl"></i>
+                </div>
+                <h1 class="font-display text-2xl font-bold text-white text-center mb-1">Admin Login</h1>
+                <p class="text-gray-500 text-sm text-center mb-2">Pixel by Maliya – Firebase Portfolio</p>
+                <div class="flex items-center justify-center gap-2 mb-6">
+                    <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+                    <span class="text-green-400 text-xs font-medium">Firebase Realtime DB Connected</span>
+                </div>
+                <div class="space-y-4">
+                    <div class="relative">
+                        <input type="password" id="loginPassword" placeholder="Enter admin password"
+                            class="w-full px-4 py-3.5 rounded-xl bg-dark-900/70 border border-white/10 text-white placeholder-gray-600 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all pr-12"
+                            onkeydown="if(event.key==='Enter') doLogin()" />
+                        <button onclick="togglePW('loginPassword',this)"
+                            class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors px-1"><i
+                                class="fas fa-eye"></i></button>
+                    </div>
+                    <p id="loginError" class="hidden text-red-400 text-sm flex items-center gap-2"><i
+                            class="fas fa-exclamation-circle"></i> Incorrect password. Please try again.</p>
+                    <button onclick="doLogin()"
+                        class="w-full py-3.5 rounded-xl bg-gradient-to-r from-brand-500 to-accent-500 text-white font-semibold hover:shadow-xl hover:shadow-brand-500/30 transition-all duration-300 hover:-translate-y-0.5 flex items-center justify-center gap-2">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </button>
+                    <!-- Reset password link -->
+                    <div class="text-center">
+                        <button onclick="resetToDefaultPassword()"
+                            class="text-gray-600 hover:text-amber-400 text-xs transition-colors underline underline-offset-2">
+                            <i class="fas fa-rotate-left mr-1"></i>Forgot password? Reset to default
+                        </button>
+                    </div>
+                </div>
+                <p class="text-gray-700 text-xs text-center mt-6"><i class="fas fa-info-circle mr-1"></i>Default: <code
+                        class="text-gray-500">pixelmaliya2025</code></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADMIN DASHBOARD -->
+    <div id="adminDash" class="hidden relative z-10 pt-20 pb-16 px-4 sm:px-6">
+        <div class="max-w-6xl mx-auto">
+
+            <!-- Header -->
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
+                <div>
+                    <h2 class="font-display text-2xl md:text-3xl font-bold text-white">Dashboard</h2>
+                    <p class="text-gray-500 text-sm mt-1">Manage your portfolio · Powered by Firebase</p>
+                </div>
+                <button onclick="doLogout()"
+                    class="flex items-center gap-2 px-4 py-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 hover:border-red-500/40 text-red-400 text-sm font-medium transition-all">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+
+            <!-- Firebase Status Banner -->
+            <div id="fbStatusBanner" class="mb-6 p-4 rounded-2xl border flex items-start gap-3 text-sm hidden">
+                <i id="fbStatusIcon" class="fas fa-circle-notch fa-spin mt-0.5 flex-shrink-0"></i>
+                <div>
+                    <p id="fbStatusTitle" class="font-semibold">Checking Firebase connection…</p>
+                    <p id="fbStatusDetail" class="text-xs mt-0.5 opacity-80"></p>
+                </div>
+            </div>
+
+            <!-- Stats Row -->
+            <div id="statsRow" class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8"></div>
+
+            <!-- Layout -->
+            <div class="grid grid-cols-1 xl:grid-cols-5 gap-6">
+
+                <!-- LEFT: Add Project -->
+                <div class="xl:col-span-2 space-y-5">
+                    <div class="bg-dark-800/70 backdrop-blur rounded-3xl border border-white/10 p-6">
+                        <h3 class="font-display font-bold text-white text-lg mb-5 flex items-center gap-2">
+                            <div
+                                class="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center border border-green-500/30">
+                                <i class="fas fa-plus text-green-400 text-sm"></i>
+                            </div>
+                            Add New Project
+                        </h3>
+
+                        <!-- Admin Tabs -->
+                        <div class="flex gap-2 mb-5">
+                            <button onclick="adminTab('graphic')" id="adminTabGraphic"
+                                class="admin-tab-btn active-admin-tab flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2"><i
+                                    class="fas fa-paint-brush"></i> Graphic</button>
+                            <button onclick="adminTab('web')" id="adminTabWeb"
+                                class="admin-tab-btn inactive-admin-tab flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2"><i
+                                    class="fas fa-code"></i> Web Design</button>
+                        </div>
+
+                        <div class="space-y-4">
+                            <!-- Title -->
+                            <div>
+                                <label class="block text-xs font-medium text-gray-400 mb-1.5">Project Title <span
+                                        class="text-red-400">*</span></label>
+                                <input type="text" id="projTitle" placeholder="e.g. Modern Restaurant Logo"
+                                    class="w-full px-4 py-2.5 rounded-xl bg-dark-900/70 border border-white/10 text-white placeholder-gray-600 focus:outline-none focus:border-brand-500 transition-all text-sm" />
+                            </div>
+
+                            <!-- Category -->
+                            <div id="adminCatField">
+                                <label class="block text-xs font-medium text-gray-400 mb-1.5">Category <span
+                                        class="text-red-400">*</span></label>
+                                <select id="projCategory"
+                                    class="w-full px-4 py-2.5 rounded-xl bg-dark-900/70 border border-white/10 text-white focus:outline-none focus:border-brand-500 transition-all text-sm">
+                                    <option value="logo">Logo Design</option>
+                                    <option value="visiting-card">Visiting Cards</option>
+                                    <option value="thankyou-card">Thank You Cards</option>
+                                    <option value="printing">Printing Work</option>
+                                    <option value="social-media">Social Media Designs</option>
+                                    <option value="banner">Banners</option>
+                                    <option value="tshirt">T-Shirts</option>
+                                </select>
+                            </div>
+
+                            <!-- Description -->
+                            <div>
+                                <label class="block text-xs font-medium text-gray-400 mb-1.5">Description <span
+                                        class="text-gray-600">(optional)</span></label>
+                                <textarea id="projDescription" rows="2" placeholder="Brief description..."
+                                    class="w-full px-4 py-2.5 rounded-xl bg-dark-900/70 border border-white/10 text-white placeholder-gray-600 focus:outline-none focus:border-brand-500 transition-all text-sm resize-none"></textarea>
+                            </div>
+
+                            <!-- Images Section (Upload OR URL) -->
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <label class="block text-xs font-medium text-gray-400">Project Images <span
+                                            class="text-red-400">*</span></label>
+                                    <span id="imgCountBadge" class="text-xs text-gray-600">0 / 6 selected</span>
+                                </div>
+
+                                <!-- Mode Toggle -->
+                                <div class="flex gap-1.5 p-1 rounded-xl bg-dark-900/70 border border-white/10 mb-3">
+                                    <button id="modeUploadBtn" onclick="setImageMode('upload')"
+                                        class="flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 bg-brand-500/20 text-brand-300 border border-brand-500/30">
+                                        <i class="fas fa-upload"></i> Upload File
+                                    </button>
+                                    <button id="modeLinkBtn" onclick="setImageMode('url')"
+                                        class="flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 text-gray-500 hover:text-gray-300">
+                                        <i class="fas fa-link"></i> Paste URL
+                                    </button>
+                                </div>
+
+                                <!-- UPLOAD MODE -->
+                                <div id="uploadModeSection">
+                                    <div id="imageDropZone"
+                                        class="border-2 border-dashed border-white/20 rounded-xl p-5 text-center cursor-pointer hover:border-brand-500/50 hover:bg-brand-500/5 transition-all"
+                                        onclick="document.getElementById('projImage').click()">
+                                        <i class="fas fa-images text-3xl text-gray-500 mb-2 block"></i>
+                                        <p class="text-gray-400 text-sm font-medium">Click or drag &amp; drop images</p>
+                                        <p class="text-gray-600 text-xs mt-1">Up to <strong class="text-gray-500">6
+                                                images</strong> &middot; PNG, JPG, WEBP &middot; Firebase Storage</p>
+                                        <input type="file" id="projImage" accept="image/*" multiple class="hidden"
+                                            onchange="onImagesSelected(event)" />
+                                    </div>
+                                    <div id="imgPreviewGrid" class="hidden mt-3 grid grid-cols-3 gap-2"></div>
+                                    <button id="addMoreBtn" onclick="document.getElementById('projImage').click()"
+                                        class="hidden mt-2 w-full py-2 rounded-xl border border-dashed border-white/20 text-gray-500 hover:text-brand-300 hover:border-brand-500/40 text-xs font-medium transition-all">
+                                        <i class="fas fa-plus mr-1"></i> Add More Images
+                                    </button>
+                                    <div id="uploadProgressWrap" class="hidden mt-3">
+                                        <div class="flex items-center justify-between mb-1">
+                                            <span class="text-xs text-gray-400"><i
+                                                    class="fas fa-fire text-orange-400 mr-1"></i>Uploading to Firebase
+                                                Storage&#x2026;</span>
+                                            <span id="uploadPct" class="text-xs text-brand-300 font-semibold">0%</span>
+                                        </div>
+                                        <div class="w-full bg-dark-600 rounded-full h-2">
+                                            <div id="uploadProgressBar"
+                                                class="bg-gradient-to-r from-brand-500 to-accent-500 h-2 rounded-full"
+                                                style="width:0%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- URL MODE -->
+                                <div id="urlModeSection" class="hidden space-y-2">
+                                    <p class="text-xs text-gray-500 mt-1"><i
+                                            class="fas fa-info-circle mr-1 text-brand-400"></i>Image host à¶šà¶»à¶½à·
+                                        link paste à¶šà¶»à¶±à·Šà¶± (Imgur, Google Drive, Cloudinary, etc.)</p>
+                                    <div id="urlInputsList" class="space-y-2 mt-2"></div>
+                                    <button onclick="addUrlRow()" id="addUrlRowBtn"
+                                        class="w-full py-2 rounded-xl border border-dashed border-white/20 text-gray-500 hover:text-brand-300 hover:border-brand-500/40 text-xs font-medium transition-all flex items-center justify-center gap-1">
+                                        <i class="fas fa-plus"></i> Add Another URL
+                                    </button>
+                                    <div id="urlPreviewGrid" class="hidden mt-2 grid grid-cols-3 gap-2"></div>
+                                </div>
+                            </div>
+
+                            <!-- Web-only -->
+                            <div id="webSpecificFields" class="hidden space-y-4">
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-400 mb-1.5">Live URL <span
+                                            class="text-gray-600">(optional)</span></label>
+                                    <input type="url" id="projUrl" placeholder="https://example.com"
+                                        class="w-full px-4 py-2.5 rounded-xl bg-dark-900/70 border border-white/10 text-white placeholder-gray-600 focus:outline-none focus:border-brand-500 transition-all text-sm" />
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-400 mb-1.5">Tech Stack</label>
+                                    <input type="text" id="projTech" placeholder="e.g. HTML, CSS, JS, React"
+                                        class="w-full px-4 py-2.5 rounded-xl bg-dark-900/70 border border-white/10 text-white placeholder-gray-600 focus:outline-none focus:border-brand-500 transition-all text-sm" />
+                                </div>
+                            </div>
+
+                            <!-- Save Button -->
+                            <button id="saveBtn" onclick="saveProject()"
+                                class="w-full py-3 rounded-xl bg-gradient-to-r from-brand-500 to-accent-500 text-white font-semibold text-sm hover:shadow-lg hover:shadow-brand-500/30 transition-all hover:-translate-y-0.5 flex items-center justify-center gap-2">
+                                <i class="fas fa-save"></i> Save to Firebase
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Change Password -->
+                    <div class="bg-dark-800/70 backdrop-blur rounded-3xl border border-white/10 p-6">
+                        <h3 class="font-display font-bold text-white text-base mb-4 flex items-center gap-2">
+                            <div class="w-7 h-7 rounded-lg bg-brand-500/15 flex items-center justify-center"><i
+                                    class="fas fa-lock text-brand-400 text-xs"></i></div>
+                            Change Password
+                        </h3>
+                        <div class="flex gap-3">
+                            <div class="relative flex-1">
+                                <input type="password" id="newPasswordInput" placeholder="New password (min 4 chars)"
+                                    class="w-full px-4 py-2.5 rounded-xl bg-dark-900/70 border border-white/10 text-white placeholder-gray-600 focus:outline-none focus:border-brand-500 transition-all text-sm pr-10" />
+                                <button onclick="togglePW('newPasswordInput',this)"
+                                    class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600 hover:text-gray-400 transition-colors"><i
+                                        class="fas fa-eye text-xs"></i></button>
+                            </div>
+                            <button onclick="changePassword()"
+                                class="px-4 py-2.5 rounded-xl bg-brand-500/20 hover:bg-brand-500/30 text-brand-300 text-sm font-medium transition-all border border-brand-500/30 whitespace-nowrap">Save</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT: Projects List -->
+                <div class="xl:col-span-3">
+                    <div class="bg-dark-800/70 backdrop-blur rounded-3xl border border-white/10 p-6">
+                        <div class="flex items-center justify-between mb-5">
+                            <h3 class="font-display font-bold text-white text-lg flex items-center gap-2">
+                                <div
+                                    class="w-8 h-8 rounded-lg bg-accent-500/15 flex items-center justify-center border border-accent-500/30">
+                                    <i class="fas fa-list text-accent-400 text-sm"></i>
+                                </div>
+                                All Projects
+                            </h3>
+                            <div class="flex gap-1.5">
+                                <button onclick="setListFilter('all')" id="listFilterAll"
+                                    class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-brand-500/20 text-brand-300 border border-brand-500/30 transition-all">All</button>
+                                <button onclick="setListFilter('graphic')" id="listFilterGraphic"
+                                    class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white/5 text-gray-400 border border-white/10 hover:text-white transition-all">Graphic</button>
+                                <button onclick="setListFilter('web')" id="listFilterWeb"
+                                    class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white/5 text-gray-400 border border-white/10 hover:text-white transition-all">Web</button>
+                            </div>
+                        </div>
+
+                        <!-- Search -->
+                        <div class="relative mb-4">
+                            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-600 text-sm"></i>
+                            <input type="text" id="searchInput" placeholder="Search projects…"
+                                oninput="renderProjectsList()"
+                                class="w-full pl-9 pr-4 py-2.5 rounded-xl bg-dark-900/70 border border-white/10 text-white placeholder-gray-600 focus:outline-none focus:border-brand-500 transition-all text-sm" />
+                        </div>
+
+                        <!-- List (with loading state) -->
+                        <div id="listLoading" class="text-center py-10">
+                            <svg class="animate-spin w-6 h-6 text-brand-400 mx-auto mb-2" fill="none"
+                                viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                    stroke-width="4" />
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                            </svg>
+                            <p class="text-gray-500 text-sm">Loading from Firebase…</p>
+                        </div>
+                        <div id="adminProjectsList" class="hidden space-y-2 max-h-[480px] overflow-y-auto pr-1"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-storage-compat.js"></script>
+    <script src="firebase-init.js"></script>
+    <script src="db.js"></script>
+
+    <script>
+        /* ==================== STATE ==================== */
+        let isLoggedIn = false;
+        let currentAdminTab = 'graphic';
+        let selectedImageFiles = [];    // File[] – upload mode
+        let imageMode = 'upload';       // 'upload' | 'url'
+        let urlImageList = [];          // string[] – URL mode
+        let listFilter = 'all';
+        let cachedProjects = [];
+        const MAX_IMAGES = 6;
+
+        /* ==================== INIT ==================== */
+        document.addEventListener('DOMContentLoaded', () => {
+            initParticles();
+            initDragDrop();
+            if (sessionStorage.getItem('pbm_admin_logged_in') === 'yes') {
+                isLoggedIn = true;
+                showDashboard();
+            }
+        });
+
+        /* ==================== LOGIN / LOGOUT ==================== */
+        function doLogin() {
+            const input = document.getElementById('loginPassword').value.trim();
+            const err = document.getElementById('loginError');
+            let correct = false;
+            try {
+                correct = DB.checkPassword(input);
+            } catch (e) {
+                // DB not ready — fall back to direct default comparison
+                const stored = localStorage.getItem('pbm_admin_pass');
+                correct = input === (stored || 'pixelmaliya2025');
+            }
+            if (correct) {
+                isLoggedIn = true;
+                sessionStorage.setItem('pbm_admin_logged_in', 'yes');
+                err.classList.add('hidden');
+                document.getElementById('loginPassword').value = '';
+                showDashboard();
+            } else {
+                err.classList.remove('hidden');
+                const inp = document.getElementById('loginPassword');
+                inp.style.borderColor = 'rgba(239,68,68,.7)';
+                inp.value = '';
+                setTimeout(() => inp.style.borderColor = '', 1000);
+                inp.focus();
+            }
+        }
+
+        /* Clear any stale saved password and reset to default */
+        function resetToDefaultPassword() {
+            if (!confirm('Reset admin password to the default (pixelmaliya2025)?')) return;
+            localStorage.removeItem('pbm_admin_pass');
+            document.getElementById('loginPassword').value = '';
+            document.getElementById('loginError').classList.add('hidden');
+            showToast('✅ Password reset to: pixelmaliya2025', 'success');
+        }
+
+        function doLogout() {
+            isLoggedIn = false;
+            sessionStorage.removeItem('pbm_admin_logged_in');
+            document.getElementById('adminDash').classList.add('hidden');
+            document.getElementById('loginScreen').classList.remove('hidden');
+        }
+
+        async function showDashboard() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('adminDash').classList.remove('hidden');
+            await checkFirebaseConnection();
+            await refreshData();
+        }
+
+        /* ── Firebase Connection Test ── */
+        async function checkFirebaseConnection() {
+            const banner = document.getElementById('fbStatusBanner');
+            const icon = document.getElementById('fbStatusIcon');
+            const title = document.getElementById('fbStatusTitle');
+            const detail = document.getElementById('fbStatusDetail');
+
+            // Show banner with loading state
+            banner.className = 'mb-6 p-4 rounded-2xl border flex items-start gap-3 text-sm bg-brand-500/10 border-brand-500/30 text-brand-200';
+            icon.className = 'fas fa-circle-notch fa-spin mt-0.5 flex-shrink-0 text-brand-400';
+            title.textContent = 'Testing Firebase connection…';
+            detail.textContent = 'Writing a test entry to Realtime Database…';
+            banner.classList.remove('hidden');
+
+            try {
+                const testRef = firebase.database().ref('__connectionTest__');
+                await testRef.set({ ts: Date.now() });
+                await testRef.remove();
+
+                // ✅ Success
+                banner.className = 'mb-6 p-4 rounded-2xl border flex items-start gap-3 text-sm bg-green-500/10 border-green-500/30 text-green-200';
+                icon.className = 'fas fa-check-circle mt-0.5 flex-shrink-0 text-green-400';
+                title.textContent = '✅ Firebase Connected – Ready to publish projects!';
+                detail.textContent = 'Realtime Database is online. Images upload to Firebase Storage.';
+                setTimeout(() => banner.classList.add('hidden'), 4000);
+
+            } catch (err) {
+                // ❌ Error — show the exact message
+                banner.className = 'mb-6 p-4 rounded-2xl border flex items-start gap-3 text-sm bg-red-500/10 border-red-500/30 text-red-200';
+                icon.className = 'fas fa-exclamation-triangle mt-0.5 flex-shrink-0 text-red-400';
+
+                let userMsg = err.message || 'Unknown error';
+                let fixHint = '';
+
+                if (err.code === 'PERMISSION_DENIED' || userMsg.includes('permission') || userMsg.includes('denied')) {
+                    title.textContent = '🔒 Firebase Rules Blocked – Projects cannot save!';
+                    fixHint = 'Firebase Console → Realtime Database → Rules → set ".write": true';
+                } else if (userMsg.includes('network') || userMsg.includes('fetch')) {
+                    title.textContent = '📡 Network Error – Check your internet connection.';
+                    fixHint = 'Make sure you are online and the Firebase project exists.';
+                } else if (userMsg.includes('app/no-app') || userMsg.includes('not initialized')) {
+                    title.textContent = '⚙️ Firebase not initialized – Check firebase-init.js.';
+                    fixHint = 'Reload the page. If it persists, check firebase-init.js config.';
+                } else {
+                    title.textContent = '❌ Firebase Error: ' + userMsg;
+                    fixHint = 'Check browser Console (F12) for more details.';
+                }
+
+                detail.textContent = fixHint;
+                console.error('Firebase connection test failed:', err);
+            }
+        }
+
+        async function refreshData() {
+            try {
+                cachedProjects = await DB.getProjects();
+            } catch (e) {
+                console.error('refreshData error:', e);
+                cachedProjects = [];
+            }
+            renderStats();
+            renderProjectsList();
+        }
+
+        /* ==================== TOGGLE PASSWORD ==================== */
+        function togglePW(id, btn) {
+            const inp = document.getElementById(id);
+            inp.type = inp.type === 'password' ? 'text' : 'password';
+            btn.querySelector('i').className = inp.type === 'password' ? 'fas fa-eye' : 'fas fa-eye-slash';
+        }
+
+        /* ==================== ADMIN TABS ==================== */
+        function adminTab(tab) {
+            currentAdminTab = tab;
+            document.querySelectorAll('.admin-tab-btn').forEach(b => { b.classList.remove('active-admin-tab'); b.classList.add('inactive-admin-tab'); });
+            const el = tab === 'graphic' ? 'adminTabGraphic' : 'adminTabWeb';
+            document.getElementById(el).classList.add('active-admin-tab');
+            document.getElementById(el).classList.remove('inactive-admin-tab');
+            document.getElementById('adminCatField').classList.toggle('hidden', tab !== 'graphic');
+            document.getElementById('webSpecificFields').classList.toggle('hidden', tab !== 'web');
+        }
+
+        /* ==================== MULTI-IMAGE SELECTION ==================== */
+        function onImagesSelected(event) {
+            const newFiles = Array.from(event.target.files);
+            document.getElementById('projImage').value = ''; // reset so same file can be added again
+            if (!newFiles.length) return;
+            const remaining = MAX_IMAGES - selectedImageFiles.length;
+            if (remaining <= 0) { showToast('Maximum 6 images already selected!', 'error'); return; }
+            const toAdd = newFiles.filter(f => f.type.startsWith('image/')).slice(0, remaining);
+            if (newFiles.length > remaining) showToast(`Max ${MAX_IMAGES} images. Added first ${remaining}.`, 'error');
+            selectedImageFiles = selectedImageFiles.concat(toAdd);
+            renderImagePreviews();
+        }
+
+        function removeImage(index) {
+            selectedImageFiles.splice(index, 1);
+            renderImagePreviews();
+        }
+
+        function renderImagePreviews() {
+            const grid = document.getElementById('imgPreviewGrid');
+            const zone = document.getElementById('imageDropZone');
+            const addMore = document.getElementById('addMoreBtn');
+            const badge = document.getElementById('imgCountBadge');
+            const count = selectedImageFiles.length;
+
+            badge.textContent = count + ' / ' + MAX_IMAGES + ' selected';
+            badge.className = count > 0 ? 'text-xs text-brand-300 font-semibold' : 'text-xs text-gray-600';
+
+            if (count === 0) {
+                grid.classList.add('hidden'); grid.innerHTML = '';
+                zone.classList.remove('hidden'); addMore.classList.add('hidden');
+                return;
+            }
+            zone.classList.add('hidden'); grid.classList.remove('hidden');
+            grid.innerHTML = '';
+
+            selectedImageFiles.forEach((file, i) => {
+                const div = document.createElement('div');
+                div.className = 'relative rounded-xl overflow-hidden border border-white/10 bg-dark-700';
+                div.style.aspectRatio = '1';
+                // placeholder while loading
+                div.innerHTML = '<div class="w-full h-full flex items-center justify-center text-gray-600"><i class="fas fa-spinner fa-spin"></i></div>';
+                grid.appendChild(div);
+                const reader = new FileReader();
+                reader.onload = e => {
+                    div.innerHTML = `
+                        <img src="${e.target.result}" class="w-full h-full object-cover"/>
+                        ${i === 0 ? '<div class="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-[10px] text-center py-0.5 font-semibold">Primary</div>' : ''}
+                        <button onclick="removeImage(${i})" class="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/70 hover:bg-red-500 flex items-center justify-center text-white transition-all">
+                            <i class="fas fa-times" style="font-size:8px"></i>
+                        </button>`;
+                };
+                reader.readAsDataURL(file);
+            });
+
+            if (count < MAX_IMAGES) {
+                addMore.classList.remove('hidden');
+                addMore.innerHTML = '<i class="fas fa-plus mr-1"></i> Add More Images (' + (MAX_IMAGES - count) + ' left)';
+            } else { addMore.classList.add('hidden'); }
+        }
+
+        function clearAllImages() {
+            selectedImageFiles = [];
+            document.getElementById('projImage').value = '';
+            document.getElementById('uploadProgressWrap').classList.add('hidden');
+            renderImagePreviews();
+        }
+
+        function initDragDrop() {
+            const zone = document.getElementById('imageDropZone');
+            zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+            zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+            zone.addEventListener('drop', e => {
+                e.preventDefault(); zone.classList.remove('drag-over');
+                const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+                if (!files.length) return;
+                const input = document.getElementById('projImage');
+                const dt = new DataTransfer(); files.forEach(f => dt.items.add(f)); input.files = dt.files;
+                onImagesSelected({ target: input });
+            });
+        }
+
+        /* ==================== IMAGE MODE TOGGLE ==================== */
+        function setImageMode(mode) {
+            imageMode = mode;
+            const uploadSection = document.getElementById('uploadModeSection');
+            const urlSection = document.getElementById('urlModeSection');
+            const uploadBtn = document.getElementById('modeUploadBtn');
+            const linkBtn = document.getElementById('modeLinkBtn');
+
+            if (mode === 'upload') {
+                uploadSection.classList.remove('hidden');
+                urlSection.classList.add('hidden');
+                uploadBtn.className = 'flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 bg-brand-500/20 text-brand-300 border border-brand-500/30';
+                linkBtn.className = 'flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 text-gray-500 hover:text-gray-300';
+            } else {
+                uploadSection.classList.add('hidden');
+                urlSection.classList.remove('hidden');
+                linkBtn.className = 'flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 bg-accent-500/20 text-accent-300 border border-accent-500/30';
+                uploadBtn.className = 'flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 text-gray-500 hover:text-gray-300';
+                if (urlImageList.length === 0) addUrlRow();
+            }
+            refreshUrlBadge();
+        }
+
+        function addUrlRow() {
+            if (urlImageList.length >= MAX_IMAGES) { showToast('Maximum 6 images!', 'error'); return; }
+            urlImageList.push('');
+            renderUrlInputs();
+        }
+
+        function removeUrlRow(idx) {
+            urlImageList.splice(idx, 1);
+            renderUrlInputs();
+        }
+
+        /* ── Normalize cloud share links into direct image URLs ── */
+        function normalizeImageUrl(raw) {
+            const url = raw.trim();
+            if (!url) return url;
+
+            // Google Drive: /file/d/{ID}/view  or  /file/d/{ID}
+            const gdMatch = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
+            if (gdMatch) return 'https://drive.google.com/uc?export=view&id=' + gdMatch[1];
+
+            // Google Drive open?id=  or  id= links
+            const gdId = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+            if (url.includes('drive.google.com') && gdId) return 'https://drive.google.com/uc?export=view&id=' + gdId[1];
+
+            // Dropbox: www.dropbox.com → dl=1
+            if (url.includes('dropbox.com')) return url.replace('www.dropbox.com', 'dl.dropboxusercontent.com').replace(/[?&]dl=0/, '').replace(/\?$/, '');
+
+            // OneDrive share → direct embed
+            if (url.includes('1drv.ms') || url.includes('onedrive.live.com')) {
+                return 'https://api.onedrive.com/v1.0/shares/u!' + btoa(url).replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_') + '/root/content';
+            }
+
+            return url; // already a direct URL
+        }
+
+        function onUrlInput(idx, val) {
+            urlImageList[idx] = normalizeImageUrl(val);
+            refreshUrlBadge();
+            renderUrlInputs();
+        }
+
+        function renderUrlInputs() {
+            const list = document.getElementById('urlInputsList');
+            list.innerHTML = urlImageList.map((url, i) => {
+                const isGDrive = url.includes('drive.google.com/uc');
+                const isConverted = isGDrive || url.includes('dropboxusercontent.com');
+                return `<div class="flex gap-2 items-center">
+                    <div class="relative flex-1">
+                        <i class="fas fa-link absolute left-3 top-1/2 -translate-y-1/2 text-gray-600 text-xs"></i>
+                        <input type="url" value="${escH(url)}" placeholder="https://i.imgur.com/example.jpg  |  Google Drive / Dropbox link"
+                            oninput="onUrlInput(${i}, this.value)"
+                            class="w-full pl-8 pr-3 py-2 rounded-xl bg-dark-900/70 border ${isConverted ? 'border-accent-500/50' : 'border-white/10'} text-white placeholder-gray-600 focus:outline-none focus:border-accent-500 transition-all text-xs" />
+                        ${isConverted ? '<span class="absolute right-2 top-1/2 -translate-y-1/2 text-[9px] text-accent-400 font-semibold"><i class="fas fa-check-circle"></i> Converted</span>' : ''}
+                    </div>
+                    ${i === 0 ? '<span class="text-[10px] text-gray-600 whitespace-nowrap">Primary</span>' : ''}
+                    <button onclick="removeUrlRow(${i})" class="w-7 h-7 rounded-lg bg-red-500/10 hover:bg-red-500/30 border border-red-500/20 flex items-center justify-center text-red-400 flex-shrink-0 transition-all" ${urlImageList.length === 1 ? 'disabled style="opacity:.4"' : ''}>
+                        <i class="fas fa-times text-xs"></i>
+                    </button>
+                </div>`;
+            }).join('');
+
+            const addBtn = document.getElementById('addUrlRowBtn');
+            if (addBtn) addBtn.classList.toggle('hidden', urlImageList.length >= MAX_IMAGES);
+            refreshUrlBadge();
+            renderUrlPreviews();
+        }
+
+        function refreshUrlBadge() {
+            const badge = document.getElementById('imgCountBadge');
+            if (!badge) return;
+            if (imageMode === 'url') {
+                const filled = urlImageList.filter(u => u).length;
+                badge.textContent = filled + ' / ' + MAX_IMAGES + ' URLs';
+                badge.className = filled > 0 ? 'text-xs text-accent-300 font-semibold' : 'text-xs text-gray-600';
+            } else {
+                const count = selectedImageFiles.length;
+                badge.textContent = count + ' / ' + MAX_IMAGES + ' selected';
+                badge.className = count > 0 ? 'text-xs text-brand-300 font-semibold' : 'text-xs text-gray-600';
+            }
+        }
+
+        function renderUrlPreviews() {
+            const grid = document.getElementById('urlPreviewGrid');
+            const validUrls = urlImageList.filter(u => u);
+            if (!validUrls.length) { grid.classList.add('hidden'); grid.innerHTML = ''; return; }
+            grid.classList.remove('hidden');
+            grid.innerHTML = validUrls.map((url, i) => `
+                <div class="relative rounded-xl overflow-hidden border border-white/10 bg-dark-700" style="aspect-ratio:1">
+                    <img src="${escH(url)}" class="w-full h-full object-cover"
+                         onload="this.nextElementSibling.classList.add('hidden')"
+                         onerror="this.style.display='none';this.nextElementSibling.classList.remove('hidden')" />
+                    <div class="absolute inset-0 flex flex-col items-center justify-center text-gray-600 text-xs text-center p-1 bg-dark-700">
+                        <i class="fas fa-spinner fa-spin text-gray-500 text-lg mb-1"></i>
+                        <span class="text-gray-600 text-[10px]">Loading...</span>
+                    </div>
+                    ${i === 0 ? '<div class="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-[10px] text-center py-0.5 font-semibold">Primary</div>' : ''}
+                </div>`).join('');
+        }
+
+        /* ==================== SAVE PROJECT (async, multi-image OR url) ==================== */
+        async function saveProject() {
+            const title = document.getElementById('projTitle').value.trim();
+            const description = document.getElementById('projDescription').value.trim();
+            if (!title) { showToast('Please enter a project title!', 'error'); document.getElementById('projTitle').focus(); return; }
+
+            // ── URL mode: save directly without Storage upload ──
+            if (imageMode === 'url') {
+                const validUrls = urlImageList.filter(u => u);
+                if (!validUrls.length) { showToast('Please enter at least one image URL!', 'error'); return; }
+                const projectData = { type: currentAdminTab, title, description };
+                if (currentAdminTab === 'graphic') projectData.category = document.getElementById('projCategory').value;
+                else { projectData.url = document.getElementById('projUrl').value.trim(); projectData.tech = document.getElementById('projTech').value.trim(); }
+
+                // Build a project object directly (no Storage upload)
+                const project = {
+                    ...projectData,
+                    image: validUrls[0],
+                    images: validUrls,
+                    storagePath: '',
+                    storagePaths: [],
+                    createdAt: Date.now(),
+                };
+                const btn = document.getElementById('saveBtn');
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Saving…';
+                try {
+                    await DB._ref.push(project);
+                    document.getElementById('projTitle').value = '';
+                    document.getElementById('projDescription').value = '';
+                    const urlEl = document.getElementById('projUrl'), techEl = document.getElementById('projTech');
+                    if (urlEl) urlEl.value = ''; if (techEl) techEl.value = '';
+                    urlImageList = []; renderUrlInputs();
+                    showToast('✅ ' + validUrls.length + ' image URL(s) saved!', 'success');
+                    await refreshData();
+                } catch (err) {
+                    showToast('❌ Save failed: ' + err.message, 'error');
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-save"></i> Save to Firebase';
+                }
+                return;
+            }
+
+            // ── Upload mode ──
+            if (!selectedImageFiles.length) { showToast('Please upload at least one image!', 'error'); return; }
+
+            const projectData = { type: currentAdminTab, title, description };
+            if (currentAdminTab === 'graphic') {
+                projectData.category = document.getElementById('projCategory').value;
+            } else {
+                projectData.url = document.getElementById('projUrl').value.trim();
+                projectData.tech = document.getElementById('projTech').value.trim();
+            }
+
+            const btn = document.getElementById('saveBtn');
+            btn.disabled = true;
+            const imgCount = selectedImageFiles.length;
+            btn.innerHTML = '<svg class="animate-spin w-4 h-4 mr-2 inline" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg> Uploading ' + imgCount + ' image(s)…';
+            document.getElementById('uploadProgressWrap').classList.remove('hidden');
+            document.getElementById('uploadPct').textContent = '0%';
+            document.getElementById('uploadProgressBar').style.width = '0%';
+
+            try {
+                await DB.saveProject(projectData, selectedImageFiles, (pct) => {
+                    document.getElementById('uploadProgressBar').style.width = pct + '%';
+                    document.getElementById('uploadPct').textContent = pct + '%';
+                });
+
+                document.getElementById('projTitle').value = '';
+                document.getElementById('projDescription').value = '';
+                const urlEl = document.getElementById('projUrl'), techEl = document.getElementById('projTech');
+                if (urlEl) urlEl.value = ''; if (techEl) techEl.value = '';
+                clearAllImages();
+
+                showToast('✅ ' + imgCount + ' image(s) saved to Firebase!', 'success');
+                await refreshData();
+
+            } catch (err) {
+                console.error('saveProject error:', err);
+                showToast('❌ Upload failed: ' + err.message, 'error');
+                document.getElementById('uploadProgressWrap').classList.add('hidden');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-save"></i> Save to Firebase';
+            }
+        }
+
+        /* ==================== DELETE PROJECT (async) ==================== */
+        async function deleteProject(id, pathsJson) {
+            if (!confirm('Delete this project from Firebase? This cannot be undone.')) return;
+            let paths; try { paths = JSON.parse(pathsJson); } catch { paths = pathsJson ? [pathsJson] : []; }
+            try {
+                await DB.deleteProject(id, paths);
+                showToast('🗑️ Project deleted.', 'success');
+                await refreshData();
+            } catch (err) {
+                showToast('❌ Delete failed: ' + err.message, 'error');
+            }
+        }
+
+        /* ==================== STATS ==================== */
+        function renderStats() {
+            const graphic = cachedProjects.filter(p => p.type === 'graphic').length;
+            const web = cachedProjects.filter(p => p.type === 'web').length;
+            const total = cachedProjects.length;
+            const stats = [
+                { label: 'Total Projects', value: total, icon: 'fa-layer-group', color: 'brand' },
+                { label: 'Graphic Design', value: graphic, icon: 'fa-paint-brush', color: 'purple' },
+                { label: 'Web Design', value: web, icon: 'fa-code', color: 'cyan' },
+                { label: 'Firebase Store', value: '✅', icon: 'fa-fire', color: 'amber' },
+            ];
+            document.getElementById('statsRow').innerHTML = stats.map(s => `
+            <div class="bg-dark-800/70 backdrop-blur rounded-2xl border border-white/10 p-5 flex items-center gap-4">
+                <div class="w-11 h-11 rounded-xl bg-${s.color}-500/15 flex items-center justify-center border border-${s.color}-500/20 flex-shrink-0"><i class="fas ${s.icon} text-${s.color}-400"></i></div>
+                <div><div class="font-display font-bold text-2xl text-white">${s.value}</div><div class="text-gray-500 text-xs">${s.label}</div></div>
+            </div>`).join('');
+        }
+
+        /* ==================== PROJECTS LIST ==================== */
+        function setListFilter(f) {
+            listFilter = f;
+            ['all', 'graphic', 'web'].forEach(k => {
+                const btn = document.getElementById('listFilter' + k.charAt(0).toUpperCase() + k.slice(1));
+                if (k === f) btn.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold bg-brand-500/20 text-brand-300 border border-brand-500/30 transition-all';
+                else btn.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold bg-white/5 text-gray-400 border border-white/10 hover:text-white transition-all';
+            });
+            renderProjectsList();
+        }
+
+        function renderProjectsList() {
+            const container = document.getElementById('adminProjectsList');
+            const loading = document.getElementById('listLoading');
+            loading.classList.add('hidden');
+            container.classList.remove('hidden');
+
+            const search = (document.getElementById('searchInput')?.value || '').toLowerCase();
+            let projects = [...cachedProjects];
+            if (listFilter !== 'all') projects = projects.filter(p => p.type === listFilter);
+            if (search) projects = projects.filter(p => (p.title || '').toLowerCase().includes(search) || (p.category || '').toLowerCase().includes(search));
+
+            if (projects.length === 0) {
+                container.innerHTML = `<div class="text-center py-10"><i class="fas fa-inbox text-4xl text-gray-700 mb-3 block"></i><p class="text-gray-500 text-sm">No projects found.</p></div>`;
+                return;
+            }
+
+            const catLabels = { 'logo': 'Logo Design', 'visiting-card': 'Visiting Card', 'thankyou-card': 'Thank You Card', 'printing': 'Printing', 'social-media': 'Social Media', 'banner': 'Banner', 'tshirt': 'T-Shirt' };
+            container.innerHTML = projects.map(p => {
+                const badge = p.type === 'graphic'
+                    ? `<span class="px-2 py-0.5 rounded-md bg-brand-500/10 text-brand-300 text-xs border border-brand-500/20">${catLabels[p.category] || p.category}</span>`
+                    : `<span class="px-2 py-0.5 rounded-md bg-purple-500/10 text-purple-300 text-xs border border-purple-500/20">Web Design</span>`;
+                const date = p.createdAt ? new Date(p.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
+                const imgCount = (p.images || [p.image]).filter(Boolean).length;
+                const pathsJson = escH(JSON.stringify(p.storagePaths || (p.storagePath ? [p.storagePath] : [])));
+                return `<div class="flex items-center gap-3 p-3 rounded-xl bg-dark-900/50 border border-white/5 hover:border-white/15 transition-all group">
+                    <div class="relative flex-shrink-0">
+                        <img src="${escH(p.image)}" alt="${escH(p.title)}" class="w-14 h-14 object-cover rounded-lg border border-white/10"
+                             onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2256%22 height=%2256%22><rect fill=%22%231f2937%22 width=%2256%22 height=%2256%22/></svg>'"/>
+                        ${imgCount > 1 ? `<div class="absolute -top-1.5 -right-1.5 min-w-5 h-5 px-1 rounded-full bg-brand-500 text-white text-[9px] font-bold flex items-center justify-center">${imgCount}</div>` : ''}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-white text-sm font-semibold truncate">${escH(p.title)}</p>
+                        <div class="flex items-center gap-2 mt-1">${badge}${date ? `<span class="text-gray-700 text-xs">${date}</span>` : ''}${imgCount > 1 ? `<span class="text-brand-400 text-xs"><i class="fas fa-images mr-0.5"></i>${imgCount} photos</span>` : ''}</div>
+                    </div>
+                    <button onclick="deleteProject('${p.id}','${pathsJson}')"
+                            class="w-8 h-8 rounded-lg bg-red-500/10 hover:bg-red-500/30 border border-red-500/20 hover:border-red-500/50 flex items-center justify-center text-red-400 transition-all opacity-0 group-hover:opacity-100 flex-shrink-0" title="Delete">
+                        <i class="fas fa-trash text-xs"></i>
+                    </button>
+                </div>`;
+            }).join('');
+        }
+
+        /* ==================== CHANGE PASSWORD ==================== */
+        function changePassword() {
+            const p = document.getElementById('newPasswordInput').value.trim();
+            if (!p || p.length < 4) { showToast('Password must be at least 4 characters!', 'error'); return; }
+            DB.setPassword(p);
+            document.getElementById('newPasswordInput').value = '';
+            showToast('✅ Password changed!', 'success');
+        }
+
+        /* ==================== HELPERS ==================== */
+        function escH(s) { if (!s) return ''; return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;'); }
+
+        function showToast(msg, type = 'success') {
+            const ex = document.querySelector('.toast'); if (ex) ex.remove();
+            const t = document.createElement('div');
+            t.className = `toast ${type}`;
+            t.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} mr-2"></i>${msg}`;
+            document.body.appendChild(t);
+            setTimeout(() => { t.style.animation = 'toastOut .3s ease forwards'; setTimeout(() => t.remove(), 300); }, 3000);
+        }
+
+        /* ==================== PARTICLES ==================== */
+        function initParticles() { const c = document.getElementById('particleCanvas'); if (!c) return; const x = c.getContext('2d'); let p = [], w, h; function r() { w = c.width = window.innerWidth; h = c.height = window.innerHeight; } r(); window.addEventListener('resize', r); function mk() { return { x: Math.random() * w, y: Math.random() * h, vx: (Math.random() - .5) * .25, vy: (Math.random() - .5) * .25, s: Math.random() * 1.2 + .4, o: Math.random() * .3 + .05, c: Math.random() > .5 ? '99,102,241' : '6,182,212' }; } for (let i = 0; i < 60; i++)p.push(mk()); function d() { x.clearRect(0, 0, w, h); p.forEach(a => { a.x += a.vx; a.y += a.vy; if (a.x < 0 || a.x > w) a.vx *= -1; if (a.y < 0 || a.y > h) a.vy *= -1; x.beginPath(); x.arc(a.x, a.y, a.s, 0, Math.PI * 2); x.fillStyle = `rgba(${a.c},${a.o})`; x.fill(); }); requestAnimationFrame(d); } d(); }
+    </script>
+</body>
+
+</html>
