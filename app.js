@@ -120,8 +120,8 @@ function filterCategory(cat) {
 }
 
 /* ==================== RENDER PORTFOLIO ==================== */
-function renderPortfolio() {
-    const allProjects = DB.getProjects();
+async function renderPortfolio() {
+    const allProjects = await DB.getProjects();
 
     if (currentMainTab === 'graphic') {
         renderGraphicGrid(allProjects.filter(p => p.type === 'graphic'));

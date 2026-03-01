@@ -373,7 +373,7 @@
 
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-storage-compat.js"></script>
     <script src="firebase-init.js"></script>
     <script src="db.js"></script>
@@ -461,15 +461,13 @@
             banner.classList.remove('hidden');
 
             try {
-                const testRef = firebase.database().ref('__connectionTest__');
-                await testRef.set({ ts: Date.now() });
-                await testRef.remove();
+                await firebase.firestore().collection('projects').limit(1).get();
 
                 // ✅ Success
                 banner.className = 'mb-6 p-4 rounded-2xl border flex items-start gap-3 text-sm bg-green-500/10 border-green-500/30 text-green-200';
                 icon.className = 'fas fa-check-circle mt-0.5 flex-shrink-0 text-green-400';
                 title.textContent = '✅ Firebase Connected – Ready to publish projects!';
-                detail.textContent = 'Realtime Database is online. Images upload to Firebase Storage.';
+                detail.textContent = 'Firestore Database is online. Images upload to Firebase Storage.';
                 setTimeout(() => banner.classList.add('hidden'), 4000);
 
             } catch (err) {

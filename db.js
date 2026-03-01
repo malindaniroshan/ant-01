@@ -1,59 +1,73 @@
 /**
- * db.js - Local Storage Database for Pixel by Maliya Portfolio
- * Handles all data persistence using localStorage
+ * db.js - Firestore Database for Pixel by Maliya Portfolio
+ * Handles all projects data persistence using Firebase Firestore
  */
 
 const DB = {
     KEYS: {
-        PROJECTS: 'pbm_projects',
         PASSWORD: 'pbm_admin_pass',
     },
 
-    // Default admin password
     DEFAULT_PASSWORD: 'pixelmaliya2025',
 
+    // Lazy initialization for Firestore
+    get _db() {
+        return firebase.firestore();
+    },
+
     /**
-     * Get all projects from localStorage
+     * Get all projects from Firestore (Used by admin panel & app.js if needed)
      */
-    getProjects() {
+    async getProjects() {
         try {
-            const raw = localStorage.getItem(this.KEYS.PROJECTS);
-            return raw ? JSON.parse(raw) : [];
+            const snapshot = await this._db.collection('projects').orderBy('createdAt', 'desc').get();
+            const projects = [];
+            snapshot.forEach(doc => {
+                projects.push({ id: doc.id, ...doc.data() });
+            });
+            return projects;
         } catch (e) {
             console.error('DB.getProjects error:', e);
+            showToast('Error fetching projects from Firebase', 'error');
             return [];
         }
     },
 
     /**
-     * Save a new project
+     * Save a new project to Firestore
      */
-    saveProject(project) {
-        const projects = this.getProjects();
-        project.id = Date.now().toString();
-        project.createdAt = new Date().toISOString();
-        projects.unshift(project); // newest first
-        localStorage.setItem(this.KEYS.PROJECTS, JSON.stringify(projects));
-        return project;
+    async saveProject(project) {
+        try {
+            const docRef = await this._db.collection('projects').add(project);
+            project.id = docRef.id;
+            return project;
+        } catch (e) {
+            console.error('DB.saveProject error:', e);
+            throw e;
+        }
     },
 
     /**
-     * Delete a project by ID
+     * Delete a project from Firestore by ID
      */
-    deleteProject(id) {
-        const projects = this.getProjects().filter(p => p.id !== id);
-        localStorage.setItem(this.KEYS.PROJECTS, JSON.stringify(projects));
+    async deleteProject(id) {
+        try {
+            await this._db.collection('projects').doc(id).delete();
+        } catch (e) {
+            console.error('DB.deleteProject error:', e);
+            throw e;
+        }
     },
 
     /**
-     * Get the admin password
+     * Get the admin password from LocalStorage
      */
     getPassword() {
         return localStorage.getItem(this.KEYS.PASSWORD) || this.DEFAULT_PASSWORD;
     },
 
     /**
-     * Set a new admin password
+     * Set a new admin password in LocalStorage
      */
     setPassword(newPass) {
         localStorage.setItem(this.KEYS.PASSWORD, newPass);
