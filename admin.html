@@ -125,16 +125,7 @@
                         class="w-full py-3.5 rounded-xl bg-gradient-to-r from-brand-500 to-accent-500 text-white font-semibold hover:shadow-xl hover:shadow-brand-500/30 transition-all duration-300 hover:-translate-y-0.5 flex items-center justify-center gap-2">
                         <i class="fas fa-sign-in-alt"></i> Login
                     </button>
-                    <!-- Reset password link -->
-                    <div class="text-center">
-                        <button onclick="resetToDefaultPassword()"
-                            class="text-gray-600 hover:text-amber-400 text-xs transition-colors underline underline-offset-2">
-                            <i class="fas fa-rotate-left mr-1"></i>Forgot password? Reset to default
-                        </button>
-                    </div>
                 </div>
-                <p class="text-gray-700 text-xs text-center mt-6"><i class="fas fa-info-circle mr-1"></i>Default: <code
-                        class="text-gray-500">pixelmaliya2025</code></p>
             </div>
         </div>
     </div>
@@ -264,8 +255,8 @@
                                     <div id="uploadProgressWrap" class="hidden mt-3">
                                         <div class="flex items-center justify-between mb-1">
                                             <span class="text-xs text-gray-400"><i
-                                                    class="fas fa-fire text-orange-400 mr-1"></i>Uploading to Firebase
-                                                Storage&#x2026;</span>
+                                                    class="fas fa-images text-brand-400 mr-1"></i>Processing
+                                                Images&#x2026;</span>
                                             <span id="uploadPct" class="text-xs text-brand-300 font-semibold">0%</span>
                                         </div>
                                         <div class="w-full bg-dark-600 rounded-full h-2">
@@ -308,7 +299,7 @@
                             <!-- Save Button -->
                             <button id="saveBtn" onclick="saveProject()"
                                 class="w-full py-3 rounded-xl bg-gradient-to-r from-brand-500 to-accent-500 text-white font-semibold text-sm hover:shadow-lg hover:shadow-brand-500/30 transition-all hover:-translate-y-0.5 flex items-center justify-center gap-2">
-                                <i class="fas fa-save"></i> Save to Firebase
+                                <i class="fas fa-save"></i> Save Project
                             </button>
                         </div>
                     </div>
@@ -412,14 +403,10 @@
         function doLogin() {
             const input = document.getElementById('loginPassword').value.trim();
             const err = document.getElementById('loginError');
-            let correct = false;
-            try {
-                correct = DB.checkPassword(input);
-            } catch (e) {
-                // DB not ready — fall back to direct default comparison
-                const stored = localStorage.getItem('pbm_admin_pass');
-                correct = input === (stored || 'pixelmaliya2025');
-            }
+
+            const stored = localStorage.getItem('pbm_admin_pass');
+            const correct = input === (stored || 'pixelmaliya2025');
+
             if (correct) {
                 isLoggedIn = true;
                 sessionStorage.setItem('pbm_admin_logged_in', 'yes');
@@ -772,7 +759,7 @@
                 btn.disabled = true;
                 btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Saving…';
                 try {
-                    await DB._ref.push(project);
+                    DB.saveProject(project);
                     document.getElementById('projTitle').value = '';
                     document.getElementById('projDescription').value = '';
                     const urlEl = document.getElementById('projUrl'), techEl = document.getElementById('projTech');
@@ -784,7 +771,7 @@
                     showToast('❌ Save failed: ' + err.message, 'error');
                 } finally {
                     btn.disabled = false;
-                    btn.innerHTML = '<i class="fas fa-save"></i> Save to Firebase';
+                    btn.innerHTML = '<i class="fas fa-save"></i> Save Project';
                 }
                 return;
             }
@@ -803,16 +790,35 @@
             const btn = document.getElementById('saveBtn');
             btn.disabled = true;
             const imgCount = selectedImageFiles.length;
-            btn.innerHTML = '<svg class="animate-spin w-4 h-4 mr-2 inline" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg> Uploading ' + imgCount + ' image(s)…';
+            btn.innerHTML = '<svg class="animate-spin w-4 h-4 mr-2 inline" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg> Processing ' + imgCount + ' image(s)…';
             document.getElementById('uploadProgressWrap').classList.remove('hidden');
             document.getElementById('uploadPct').textContent = '0%';
             document.getElementById('uploadProgressBar').style.width = '0%';
 
             try {
-                await DB.saveProject(projectData, selectedImageFiles, (pct) => {
+                // Convert files to base64
+                const images = [];
+                for (let i = 0; i < selectedImageFiles.length; i++) {
+                    const dataUrl = await new Promise((resolve) => {
+                        const reader = new FileReader();
+                        reader.onload = e => resolve(e.target.result);
+                        reader.readAsDataURL(selectedImageFiles[i]);
+                    });
+                    images.push(dataUrl);
+                    const pct = Math.round(((i + 1) / selectedImageFiles.length) * 100);
                     document.getElementById('uploadProgressBar').style.width = pct + '%';
                     document.getElementById('uploadPct').textContent = pct + '%';
-                });
+                }
+
+                const project = {
+                    ...projectData,
+                    image: images[0],
+                    images: images,
+                    storagePaths: [],
+                    createdAt: Date.now()
+                };
+
+                DB.saveProject(project);
 
                 document.getElementById('projTitle').value = '';
                 document.getElementById('projDescription').value = '';
@@ -820,25 +826,24 @@
                 if (urlEl) urlEl.value = ''; if (techEl) techEl.value = '';
                 clearAllImages();
 
-                showToast('✅ ' + imgCount + ' image(s) saved to Firebase!', 'success');
+                showToast('✅ ' + imgCount + ' image(s) saved!', 'success');
                 await refreshData();
 
             } catch (err) {
                 console.error('saveProject error:', err);
-                showToast('❌ Upload failed: ' + err.message, 'error');
+                showToast('❌ Save failed: ' + err.message, 'error');
                 document.getElementById('uploadProgressWrap').classList.add('hidden');
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-save"></i> Save to Firebase';
+                btn.innerHTML = '<i class="fas fa-save"></i> Save Project';
             }
         }
 
         /* ==================== DELETE PROJECT (async) ==================== */
         async function deleteProject(id, pathsJson) {
-            if (!confirm('Delete this project from Firebase? This cannot be undone.')) return;
-            let paths; try { paths = JSON.parse(pathsJson); } catch { paths = pathsJson ? [pathsJson] : []; }
+            if (!confirm('Delete this project? This cannot be undone.')) return;
             try {
-                await DB.deleteProject(id, paths);
+                DB.deleteProject(id);
                 showToast('🗑️ Project deleted.', 'success');
                 await refreshData();
             } catch (err) {
@@ -921,7 +926,7 @@
         function changePassword() {
             const p = document.getElementById('newPasswordInput').value.trim();
             if (!p || p.length < 4) { showToast('Password must be at least 4 characters!', 'error'); return; }
-            DB.setPassword(p);
+            localStorage.setItem('pbm_admin_pass', p);
             document.getElementById('newPasswordInput').value = '';
             showToast('✅ Password changed!', 'success');
         }
